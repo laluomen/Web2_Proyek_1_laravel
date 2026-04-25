@@ -1,87 +1,120 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminRuanganController;
+use App\Http\Controllers\AdminGedungController;
+use App\Http\Controllers\AdminLantaiController;
+use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AdminLaporanController;
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+
+// Home boleh diakses siapa pun tanpa login
+Route::get('/', [MahasiswaController::class, 'dashboard'])->name('home');
+
+// Route lama tetap disediakan agar link lama tidak error
+Route::get('/mahasiswa/dashboard', [MahasiswaController::class, 'dashboard'])
+    ->name('mahasiswa.dashboard');
+
+// Alias /ruangan agar tidak 404
+Route::get('/ruangan', function () {
+    return redirect()->route('mahasiswa.ruangan');
+})->name('ruangan');
+
+// Alias /peminjaman agar tidak 404
+Route::get('/peminjaman', function () {
+    return redirect()->route('mahasiswa.peminjaman');
+})->name('peminjaman');
+
+/*
+|--------------------------------------------------------------------------
+| Auth Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function () {
-    // Traffic Director Dashboard
-    Route::get('/dashboard', function () {
-        if (\Illuminate\Support\Facades\Auth::user()->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-        return redirect()->route('mahasiswa.dashboard');
-    })->name('dashboard');
+/*
+|--------------------------------------------------------------------------
+| Redirect Dashboard
+|--------------------------------------------------------------------------
+*/
 
-    // Rute Admin
-    Route::middleware('role:admin')->prefix('admin')->group(function () {
-        Route::get('/dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
-        Route::get('/persetujuan', [\App\Http\Controllers\AdminController::class, 'persetujuan'])->name('admin.persetujuan');
-        Route::get('/laporan', [\App\Http\Controllers\AdminLaporanController::class, 'index'])->name('admin.laporan');
-        Route::post('/approve', [\App\Http\Controllers\AdminController::class, 'processApproval'])->name('admin.approve.process');
-        
-        // Kelola Gedung
-        Route::get('/gedung', [\App\Http\Controllers\AdminGedungController::class, 'index'])->name('admin.gedung.index');
-        Route::post('/gedung', [\App\Http\Controllers\AdminGedungController::class, 'store'])->name('admin.gedung.store');
-        Route::put('/gedung', [\App\Http\Controllers\AdminGedungController::class, 'update'])->name('admin.gedung.update');
-        Route::delete('/gedung/{id}', [\App\Http\Controllers\AdminGedungController::class, 'destroy'])->name('admin.gedung.destroy');
-        
-        // Kelola Lantai
-        Route::get('/lantai', [\App\Http\Controllers\AdminLantaiController::class, 'index'])->name('admin.lantai.index');
-        Route::post('/lantai', [\App\Http\Controllers\AdminLantaiController::class, 'store'])->name('admin.lantai.store');
-        Route::put('/lantai', [\App\Http\Controllers\AdminLantaiController::class, 'update'])->name('admin.lantai.update');
-        Route::delete('/lantai/{id}', [\App\Http\Controllers\AdminLantaiController::class, 'destroy'])->name('admin.lantai.destroy');
-        
-        // Kelola Ruangan
-        Route::get('/ruangan', [\App\Http\Controllers\AdminRuanganController::class, 'index'])->name('admin.ruangan.index');
-        Route::post('/ruangan', [\App\Http\Controllers\AdminRuanganController::class, 'store'])->name('admin.ruangan.store');
-        Route::put('/ruangan', [\App\Http\Controllers\AdminRuanganController::class, 'update'])->name('admin.ruangan.update');
-        Route::delete('/ruangan/{id}', [\App\Http\Controllers\AdminRuanganController::class, 'destroy'])->name('admin.ruangan.destroy');
-        
-        // Kelola User
-        Route::get('/user', [\App\Http\Controllers\AdminUserController::class, 'index'])->name('admin.user.index');
-        Route::post('/user', [\App\Http\Controllers\AdminUserController::class, 'store'])->name('admin.user.store');
-        Route::put('/user', [\App\Http\Controllers\AdminUserController::class, 'update'])->name('admin.user.update');
-        Route::delete('/user/{id}', [\App\Http\Controllers\AdminUserController::class, 'destroy'])->name('admin.user.destroy');
+Route::get('/dashboard', function () {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    if (auth()->user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+
+    return redirect()->route('home');
+})->name('dashboard');
+
+/*
+|--------------------------------------------------------------------------
+| Mahasiswa Routes
+|--------------------------------------------------------------------------
+| Wajib login.
+| Admin boleh akses untuk preview halaman user.
+*/
+
+Route::middleware(['auth', 'role:mahasiswa,admin'])
+    ->prefix('mahasiswa')
+    ->name('mahasiswa.')
+    ->group(function () {
+        Route::get('/ruangan', [MahasiswaController::class, 'ruangan'])->name('ruangan');
+        Route::get('/ruangan/{id}', [MahasiswaController::class, 'detailRuangan'])->name('ruangan.detail');
+
+        Route::get('/peminjaman', [MahasiswaController::class, 'peminjaman'])->name('peminjaman');
+        Route::post('/peminjaman/store', [MahasiswaController::class, 'storePeminjaman'])->name('peminjaman.store');
+        Route::post('/peminjaman/cancel', [MahasiswaController::class, 'cancelPeminjaman'])->name('peminjaman.cancel');
     });
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
 
-// Rute Mahasiswa
-Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
-    Route::get('/dashboard', [App\Http\Controllers\MahasiswaController::class, 'dashboard'])->name('dashboard');
-    Route::get('/ruangan', [App\Http\Controllers\MahasiswaController::class, 'ruangan'])->name('ruangan');
-    Route::get('/ruangan/{id}', [App\Http\Controllers\MahasiswaController::class, 'detailRuangan'])->name('ruangan.detail');
-    
-    Route::get('/peminjaman', [App\Http\Controllers\MahasiswaController::class, 'peminjaman'])->name('peminjaman');
-    Route::post('/peminjaman/store', [App\Http\Controllers\MahasiswaController::class, 'storePeminjaman'])->name('peminjaman.store');
-    Route::post('/peminjaman/cancel', [App\Http\Controllers\MahasiswaController::class, 'cancelPeminjaman'])->name('peminjaman.cancel');
-});
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-// Route to dashboard for guests
-Route::get('/dashboard', [App\Http\Controllers\MahasiswaController::class, 'dashboard'])->name('dashboard');
+        Route::get('/persetujuan', [AdminController::class, 'persetujuan'])->name('persetujuan');
+        Route::post('/approve', [AdminController::class, 'processApproval'])->name('approve.process');
 
-Route::get('/', function () {
-    return redirect('/dashboard');
-});
+        Route::get('/ruangan', [AdminRuanganController::class, 'index'])->name('ruangan.index');
+        Route::post('/ruangan', [AdminRuanganController::class, 'store'])->name('ruangan.store');
+        Route::put('/ruangan', [AdminRuanganController::class, 'update'])->name('ruangan.update');
+        Route::delete('/ruangan/{id}', [AdminRuanganController::class, 'destroy'])->name('ruangan.destroy');
 
-Route::get('/test-url-generation', function () {
-    return response()->json([
-        'ruangan_detail' => route('mahasiswa.ruangan.detail', 1),
-        'dashboard' => route('mahasiswa.dashboard'),
-        'peminjaman' => route('mahasiswa.peminjaman')
-    ]);
-});
+        Route::get('/gedung', [AdminGedungController::class, 'index'])->name('gedung.index');
+        Route::post('/gedung', [AdminGedungController::class, 'store'])->name('gedung.store');
+        Route::put('/gedung', [AdminGedungController::class, 'update'])->name('gedung.update');
+        Route::delete('/gedung/{id}', [AdminGedungController::class, 'destroy'])->name('gedung.destroy');
 
-Route::fallback(function() {
-    return redirect('/dashboard');
-});
+        Route::get('/lantai', [AdminLantaiController::class, 'index'])->name('lantai.index');
+        Route::post('/lantai', [AdminLantaiController::class, 'store'])->name('lantai.store');
+        Route::put('/lantai', [AdminLantaiController::class, 'update'])->name('lantai.update');
+        Route::delete('/lantai/{id}', [AdminLantaiController::class, 'destroy'])->name('lantai.destroy');
+
+        Route::get('/user', [AdminUserController::class, 'index'])->name('user.index');
+        Route::post('/user', [AdminUserController::class, 'store'])->name('user.store');
+        Route::put('/user', [AdminUserController::class, 'update'])->name('user.update');
+        Route::delete('/user/{id}', [AdminUserController::class, 'destroy'])->name('user.destroy');
+
+        Route::get('/laporan', [AdminLaporanController::class, 'index'])->name('laporan');
+    });
