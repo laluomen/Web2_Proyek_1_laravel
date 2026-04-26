@@ -1,4 +1,4 @@
-<x-admin-layout>
+<x-layouts.admin-layout>
 
 @push('styles')
 <style>
@@ -343,4 +343,4 @@
 </script>
 @endpush
 
-</x-admin-layout>
+</x-layouts.admin-layout>

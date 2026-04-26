@@ -1,4 +1,4 @@
-<x-mahasiswa-layout>
+<x-layouts.mahasiswa-layout>
     <x-slot:title>Peminjaman - Peminjaman Ruangan</x-slot>
 
     <div class="container py-4">
@@ -245,4 +245,4 @@
         });
     </script>
     @endpush
-</x-mahasiswa-layout>
+</x-layouts.mahasiswa-layout>
