@@ -8,6 +8,8 @@
         current="Ruangan"
         :heroImg="$heroImg"
     />
+
+    <!-- CARD-->
      <div class="wrap">
         <section class="room-section">
             <div class="container">
