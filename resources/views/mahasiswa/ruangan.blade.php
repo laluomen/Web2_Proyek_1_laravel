@@ -1,4 +1,4 @@
-<x-mahasiswa-layout>
+<x-layouts.mahasiswa-layout>
     <x-slot:title>Ruangan - Peminjaman Ruangan</x-slot>
 
     <!-- HERO -->
@@ -64,4 +64,4 @@
             </div>
         </section>
     </div>
-</x-mahasiswa-layout>
+</x-layouts.mahasiswa-layout>

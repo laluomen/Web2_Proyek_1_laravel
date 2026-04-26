@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-layouts.guest-layout>
 
 <!-- HERO -->
 <section class="hero-full">
@@ -143,4 +143,4 @@
    });
 </script>
 
-</x-guest-layout>
+</x-layouts.guest-layout>

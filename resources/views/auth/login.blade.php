@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-layouts.guest-layout>
   <style>
     .login-stage {
       padding: 30px 0
@@ -308,4 +308,4 @@
     const pw = document.getElementById('pw');
     if (cb && pw) cb.addEventListener('change', () => { pw.type = cb.checked ? 'text' : 'password'; });
   </script>
-</x-guest-layout>
+</x-layouts.guest-layout>

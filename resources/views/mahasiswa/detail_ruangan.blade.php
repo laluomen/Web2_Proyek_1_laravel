@@ -22,7 +22,7 @@ function iconFasilitas(string $nama): string {
 }
 @endphp
 
-<x-mahasiswa-layout>
+<x-layouts.mahasiswa-layout>
     <x-slot:title>Detail Ruangan - {{ $ruangan->nama_ruangan ?? 'Peminjaman Ruangan' }}</x-slot>
 
     <section class="hero-page">
@@ -197,4 +197,4 @@ function iconFasilitas(string $nama): string {
         })();
     </script>
     @endpush
-</x-mahasiswa-layout>
+</x-layouts.mahasiswa-layout>

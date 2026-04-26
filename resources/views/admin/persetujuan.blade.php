@@ -1,4 +1,4 @@
-<x-admin-layout>
+<x-layouts.admin-layout>
 
 <div class="admin-container" style="max-width: 100%;">
     <!-- Page Header -->
@@ -203,4 +203,4 @@
     }, 5000);
 </script>
 @endpush
-</x-admin-layout>
+</x-layouts.admin-layout>
