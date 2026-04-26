@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class MahasiswaController extends Controller
@@ -288,18 +289,18 @@ class MahasiswaController extends Controller
 
         $validated_request = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
-            'username' => ['required', 'string', 'max:50', Rule::unique('users')->ignore('$user->id')],
-            'email' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore('$user->id')],
+            'username' => ['required', 'string', 'max:50', Rule::unique('users', 'username')->ignore($user->getKey(), 'id')],
+            'email' => ['nullable', 'string', 'max:255', Rule::unique('users', 'email')->ignore($user->getKey(), 'id')],
             'current_password' => ['required_with:password', 'nullable', 'current_password'],
             'password' => ['nullable', 'string', 'min:6', 'confirmed'],
         ]);
 
-        $user->name = $validated_request['nama'];
+        $user->nama = $validated_request['nama'];
         $user->username = $validated_request['username'];
         $user->email = $validated_request['email'];
 
         if ($request->filled('password'))
-        {   $user->password = Hash::make($validated['password']);
+        {   $user->password = Hash::make($validated_request['password']);
         }
 
         $user->save();
