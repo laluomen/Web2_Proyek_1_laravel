@@ -55,31 +55,8 @@
                 @else
                     <div class="room-grid">
                         @foreach ($ruangan as $r)
-                            @php $fotoRuangan = $r->foto_utama ?? ''; @endphp
-
                             <div class="room-item">
-                                <div class="room-card">
-
-                                    <div class="room-img">
-                                        <img src="{{ !empty($fotoRuangan) ? asset('storage/uploads/ruangan/' . $fotoRuangan) : asset('assets/icons/logo_big.svg') }}"
-                                            alt="{{ $r->nama_ruangan }}">
-                                    </div>
-
-                                    <div class="room-body">
-                                        <div class="room-title">{{ $r->nama_ruangan }}</div>
-
-                                        <div class="room-meta">
-                                            Lokasi: {{ $r->gedung }}<br>
-                                            Lantai: {{ $r->Lantai ?? ($r->lantai ?? '-') }}<br>
-                                            Kapasitas: {{ $r->kapasitas }} orang
-                                        </div>
-
-                                        <a href="{{ route('mahasiswa.ruangan.detail', $r->id) }}" class="room-btn">
-                                            View Details
-                                        </a>
-                                    </div>
-
-                                </div>
+                                <x-room-card :ruangan="$r" />
                             </div>
                         @endforeach
                     </div>

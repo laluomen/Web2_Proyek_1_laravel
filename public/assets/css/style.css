@@ -1287,12 +1287,6 @@ label {
 }
 
 /* ================= ROOM GRID (SAMA DASHBOARD) ================= */
-
-.room-section {
-  padding-top: 10px;
-  padding-bottom: 40px;
-}
-
 .room-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
