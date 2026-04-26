@@ -5,7 +5,7 @@
       </a>
 
       <nav class="mainmenu" aria-label="Primary">
-        <a class="{{ request()->routeIs('mahasiswa.dashboard') ? 'active' : '' }}" href="{{ route('mahasiswa.dashboard') }}">Home</a>
+        {{-- <a class="{{ request()->routeIs('mahasiswa.dashboard') ? 'active' : '' }}" href="{{ route('mahasiswa.dashboard') }}">Home</a> --}}
         <a class="{{ request()->routeIs('home', 'mahasiswa.dashboard') ? 'active' : '' }}" 
         href="{{ route('home') }}">Home</a>
         <a class="{{ request()->routeIs('mahasiswa.ruangan*') ? 'active' : '' }}" href="{{ route('mahasiswa.ruangan') }}">Ruangan</a>
