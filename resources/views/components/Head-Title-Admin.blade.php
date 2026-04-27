@@ -3,6 +3,7 @@
     'icon' => null,
     'buttonText' => 'Tambah Gedung',
     'modalTarget' => '#modalAddGedung',
+    'showButton' => true,
 ])
 
 <div class="kelola-header mb-4">
@@ -14,7 +15,9 @@
         <h1>{{ $title }}</h1>
     </div>
 
-    <button class="btn-tambah" data-bs-toggle="modal" data-bs-target="{{ $modalTarget }}">
-        <i class="bi bi-plus-circle-fill me-2"></i>{{ $buttonText }}
-    </button>
+    @if ($showButton)
+        <button class="btn-tambah" data-bs-toggle="modal" data-bs-target="{{ $modalTarget }}">
+            <i class="bi bi-plus-circle-fill me-2"></i>{{ $buttonText }}
+        </button>
+    @endif
 </div>
