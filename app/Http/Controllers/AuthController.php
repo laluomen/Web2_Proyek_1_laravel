@@ -40,7 +40,7 @@ class AuthController extends Controller
             ['label' => 'Kapasitas', 'value' => $totalKapas],
         ];
 
-        return view('auth.login', ['stats' => $statsArray]);
+        return view('auth.login', ['stats' => $statsArray, 'defaultTab' => 'login']);
     }
 
     public function login(Request $request)
@@ -192,12 +192,31 @@ class AuthController extends Controller
             return redirect($role === 'admin' ? '/admin/dashboard' : '/dashboard');
         }
 
-        return view('auth.register');
+        $stats = DB::selectOne("
+            SELECT
+                COUNT(r.id)                         AS total_ruangan,
+                COUNT(DISTINCT g.id)                AS total_gedung,
+                COALESCE(SUM(r.kapasitas), 0)       AS total_kapasitas
+            FROM ruangan r
+            LEFT JOIN lantai l ON l.id = r.lantai_id
+            LEFT JOIN gedung g ON g.id = l.gedung_id
+        ");
+
+        $totalRuangan = number_format((int) ($stats->total_ruangan ?? 0), 0, ',', '.');
+        $totalGedung = number_format((int) ($stats->total_gedung ?? 0), 0, ',', '.');
+        $totalKapas = number_format((int) ($stats->total_kapasitas ?? 0), 0, ',', '.') . ' org';
+
+        $statsArray = [
+            ['label' => 'Total Ruangan', 'value' => $totalRuangan],
+            ['label' => 'Gedung', 'value' => $totalGedung],
+            ['label' => 'Kapasitas', 'value' => $totalKapas],
+        ];
+
+        return view('auth.login', ['stats' => $statsArray, 'defaultTab' => 'register']);
     }
 
     public function register(Request $request)
     {   $validated_request = $request->validate([
-            'nama' => ['required', 'string', 'max:100'],
             'username' => ['required', 'string', 'max:50', 'unique:users,username'],
             'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -205,7 +224,7 @@ class AuthController extends Controller
         ]);
 
         $user = User::create([
-            'nama' => $validated_request['nama'],
+            'nama' => $validated_request['username'],
             'username' => $validated_request['username'],
             'email' => $validated_request['email'],
             'password' => Hash::make($validated_request['password']),
