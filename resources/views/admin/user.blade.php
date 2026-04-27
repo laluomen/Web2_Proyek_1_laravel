@@ -2,149 +2,152 @@
 
 <div class="admin-container" style="max-width: 100%;">
     <!-- Page Header -->
-    <div class="kelola-header mb-4">
-        <h1>Kelola User</h1>
-        <button class="btn-tambah" data-bs-toggle="modal" data-bs-target="#modalAddUser">
-            <i class="bi bi-person-plus-fill me-2"></i>Tambah User
-        </button>
-    </div>
-
+    <x-head-title-admin
+    title="Kelola User"
+    icon="bi bi-person-plus-fill"
+    buttonText="Tambah User"
+    modalTarget="#modalAddUse"
+    />
     <!-- Alert Messages -->
     <x-alert-admin />
 
     <!-- Card Tabel User -->
-    <div class="card shadow border-0" style="border-radius: 15px; overflow: hidden;">
-        <div class="card-header bg-white py-3 border-bottom" style="background: linear-gradient(to right, #f8f9fa, #e9ecef) !important;">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h5 class="mb-0 fw-bold" style="color: #495057;">
-                        <i class="bi bi-people-fill me-2" style="color: #22c55e;"></i>Daftar User
-                    </h5>
-                </div>
-                <div class="col-md-6">
-                    <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
-                        <span class="input-group-text bg-white border-end-0">
-                            <i class="bi bi-search" style="color: #22c55e;"></i>
-                        </span>
-                        <input type="text" class="form-control border-start-0 bg-white" id="searchInput"
-                            placeholder="Cari nama, username..." style="border-left: 0;">
+   <x-table-card
+    title="Daftar User"
+    icon="bi bi-people-fill"
+    table-id="tableUser"
+    search-placeholder="Cari nama, username..."
+    :total="count($users)"
+    total-label="user terdaftar"
+    :empty="$users->isEmpty()"
+    empty-title="Belum ada data user"
+    empty-subtitle="Tambahkan user pertama Anda"
+    :colspan="6"
+    :show-footer="false"
+>
+    <x-slot name="head">
+        <tr>
+            <th class="text-center" style="width: 50px; padding: 15px 10px;">
+                <i class="bi bi-hash"></i>
+            </th>
+            <th style="width: 25%; padding: 15px;">
+                <i class="bi bi-person me-1"></i>Nama
+            </th>
+            <th style="width: 20%; padding: 15px;">
+                <i class="bi bi-at me-1"></i>Username
+            </th>
+            <th class="text-center" style="width: 12%; padding: 15px;">
+                <i class="bi bi-shield-check me-1"></i>Role
+            </th>
+            <th style="width: 18%; padding: 15px;">
+                <i class="bi bi-mortarboard me-1"></i>Prodi
+            </th>
+            <th class="text-center" style="width: 280px; padding: 15px;">
+                <i class="bi bi-gear me-1"></i>Aksi
+            </th>
+        </tr>
+    </x-slot>
+
+    @foreach ($users as $i => $user)
+        <tr>
+            <td class="text-center">
+                <span class="badge-number">{{ $i + 1 }}</span>
+            </td>
+
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="avatar-circle me-3">
+                        {{ strtoupper(substr($user->nama, 0, 1)) }}
+                    </div>
+
+                    <div>
+                        <div class="fw-bold text-dark" style="font-size: 1rem;">
+                            {{ $user->nama }}
+                        </div>
+                        <small class="text-muted">
+                            <i class="bi bi-calendar3 me-1"></i>
+                            {{ date('d M Y', strtotime($user->created_at)) }}
+                        </small>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" id="tableUser">
-                    <thead style="background: linear-gradient(to right, #f8f9fa, #e9ecef);">
-                        <tr>
-                            <th class="text-center" style="width: 50px; padding: 15px 10px;">
-                                <i class="bi bi-hash"></i>
-                            </th>
-                            <th style="width: 25%; padding: 15px;">
-                                <i class="bi bi-person me-1"></i>Nama
-                            </th>
-                            <th style="width: 20%; padding: 15px;">
-                                <i class="bi bi-at me-1"></i>Username
-                            </th>
-                            <th class="text-center" style="width: 12%; padding: 15px;">
-                                <i class="bi bi-shield-check me-1"></i>Role
-                            </th>
-                            <th style="width: 18%; padding: 15px;">
-                                <i class="bi bi-mortarboard me-1"></i>Prodi
-                            </th>
-                            <th class="text-center" style="width: 280px; padding: 15px;">
-                                <i class="bi bi-gear me-1"></i>Aksi
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if ($users->isEmpty())
-                            <tr>
-                                <td colspan="6" class="text-center py-5">
-                                    <div class="text-muted">
-                                        <i class="bi bi-inbox display-4 d-block mb-3"></i>
-                                        <p class="mb-0">Belum ada data user</p>
-                                        <small>Tambahkan user pertama Anda</small>
-                                    </div>
-                                </td>
-                            </tr>
-                        @else
-                            @foreach ($users as $i => $user)
-                                <tr>
-                                    <td class="text-center">
-                                        <span class="badge-number">{{ $i + 1 }}</span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle me-3">
-                                                {{ strtoupper(substr($user->nama, 0, 1)) }}
-                                            </div>
-                                            <div>
-                                                <div class="fw-bold text-dark" style="font-size: 1rem;">
-                                                    {{ $user->nama }}
-                                                </div>
-                                                <small class="text-muted">
-                                                    <i class="bi bi-calendar3 me-1"></i>{{ date('d M Y', strtotime($user->created_at)) }}
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="text-dark">
-                                            <i class="bi bi-person-badge me-1 text-muted"></i>{{ $user->username }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        @if ($user->role === 'admin')
-                                            <span class="badge" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                                                <i class="bi bi-shield-fill-check me-1"></i>Admin
-                                            </span>
-                                        @else
-                                            <span class="badge" style="background: linear-gradient(135deg, #0dcaf0, #0aa2c0);">
-                                                <i class="bi bi-person-fill me-1"></i>Mahasiswa
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <span class="text-dark">
-                                            @if ($user->prodi)
-                                                <i class="bi bi-mortarboard-fill me-1 text-success"></i>{{ $user->prodi }}
-                                            @else
-                                                <span class="text-muted">-</span>
-                                            @endif
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex justify-content-center gap-1">
-                                            <button class="btn btn-info aksi-btn" style="min-width: 65px; font-size: 0.8rem;"
-                                                onclick="viewDetail({{ $user->id }}, '{{ addslashes($user->nama) }}', '{{ addslashes($user->username) }}', '{{ $user->role }}', '{{ addslashes($user->prodi ?? '') }}', '{{ date('d M Y', strtotime($user->created_at)) }}')">
-                                                <i class="bi bi-eye-fill me-1"></i>Detail
-                                            </button>
-                                            <button class="btn btn-warning aksi-btn" style="min-width: 60px; font-size: 0.8rem;"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalEditUser"
-                                                onclick="editUser({{ $user->id }}, '{{ addslashes($user->nama) }}', '{{ addslashes($user->username) }}', '{{ $user->role }}', '{{ addslashes($user->prodi ?? '') }}')">
-                                                <i class="bi bi-pencil-fill me-1"></i>Edit
-                                            </button>
-                                            <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST" class="d-inline" id="formDelete{{ $user->id }}">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-danger aksi-btn" style="min-width: 65px; font-size: 0.8rem;"
-                                                    onclick="deleteUser({{ $user->id }}, '{{ addslashes($user->nama) }}')">
-                                                    <i class="bi bi-trash-fill me-1"></i>Hapus
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @endif
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+            </td>
+
+            <td>
+                <span class="text-dark">
+                    <i class="bi bi-person-badge me-1 text-muted"></i>{{ $user->username }}
+                </span>
+            </td>
+
+            <td class="text-center">
+                @if ($user->role === 'admin')
+                    <span class="badge" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        <i class="bi bi-shield-fill-check me-1"></i>Admin
+                    </span>
+                @else
+                    <span class="badge" style="background: linear-gradient(135deg, #0dcaf0, #0aa2c0);">
+                        <i class="bi bi-person-fill me-1"></i>Mahasiswa
+                    </span>
+                @endif
+            </td>
+
+            <td>
+                <span class="text-dark">
+                    @if ($user->prodi)
+                        <i class="bi bi-mortarboard-fill me-1 text-success"></i>{{ $user->prodi }}
+                    @else
+                        <span class="text-muted">-</span>
+                    @endif
+                </span>
+            </td>
+
+            <td>
+                <div class="d-flex justify-content-center gap-1">
+                    <button class="btn btn-info aksi-btn"
+                        style="min-width: 65px; font-size: 0.8rem;"
+                        onclick="viewDetail(
+                            {{ $user->id }},
+                            '{{ addslashes($user->nama) }}',
+                            '{{ addslashes($user->username) }}',
+                            '{{ $user->role }}',
+                            '{{ addslashes($user->prodi ?? '') }}',
+                            '{{ date('d M Y', strtotime($user->created_at)) }}'
+                        )">
+                        <i class="bi bi-eye-fill me-1"></i>Detail
+                    </button>
+
+                    <button class="btn btn-warning aksi-btn"
+                        style="min-width: 60px; font-size: 0.8rem;"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalEditUser"
+                        onclick="editUser(
+                            {{ $user->id }},
+                            '{{ addslashes($user->nama) }}',
+                            '{{ addslashes($user->username) }}',
+                            '{{ $user->role }}',
+                            '{{ addslashes($user->prodi ?? '') }}'
+                        )">
+                        <i class="bi bi-pencil-fill me-1"></i>Edit
+                    </button>
+
+                    <form action="{{ route('admin.user.destroy', $user->id) }}"
+                        method="POST"
+                        class="d-inline"
+                        id="formDelete{{ $user->id }}">
+                        @csrf
+                        @method('DELETE')
+
+                        <button type="button"
+                            class="btn btn-danger aksi-btn"
+                            style="min-width: 65px; font-size: 0.8rem;"
+                            onclick="deleteUser({{ $user->id }}, '{{ addslashes($user->nama) }}')">
+                            <i class="bi bi-trash-fill me-1"></i>Hapus
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    @endforeach
+</x-table-card>
 
 <!-- Modal Add User -->
 <div class="modal fade" id="modalAddUser" tabindex="-1">
